@@ -47,11 +47,11 @@ loss_fn = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=5e-2)
 
 epochs = 300
-tt = engine.Engine(device)
+engine_ = engine.Engine(device)
 for t in range(epochs):
     print(f'Epoch {t+1}\n-------------------------------')
-    tt.train(train_dataloader, model, loss_fn, optimizer)
-    tt.test(test_dataloader, model, loss_fn)
+    engine_.train(train_dataloader, model, loss_fn, optimizer)
+    engine_.test(test_dataloader, model, loss_fn)
 print('Done!')
 
 torch.save(model.state_dict(), 'model.pth')
