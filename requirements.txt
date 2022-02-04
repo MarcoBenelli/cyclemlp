@@ -1,0 +1,9 @@
+autopep8==1.6.0
+numpy==1.22.1
+Pillow==9.0.1
+pycodestyle==2.8.0
+timm==0.5.4
+toml==0.10.2
+torch==1.8.2+cpu
+torchvision==0.9.2+cpu
+typing-extensions==4.0.1
