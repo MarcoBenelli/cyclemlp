@@ -20,7 +20,8 @@ class Engine:
             loss.backward()
             optimizer.step()
 
-            loss, current = loss.item(), batch * len(x)
+            loss = loss.item()
+            current = batch * len(x) if batch < len(x)-1 else size
             print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
 
     def test(self, dataloader, model, loss_fn):
@@ -36,5 +37,5 @@ class Engine:
                 correct += (pred.argmax(1) == y).type(torch.float).sum().item()
         test_loss /= num_batches
         correct /= size
-        print(
-            f'Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n')
+        print('Test Error:')
+        print(f' Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f}')

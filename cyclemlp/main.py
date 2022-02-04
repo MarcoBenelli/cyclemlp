@@ -26,8 +26,8 @@ test_data = torchvision.datasets.STL10(
 batch_size = 256
 
 # Create data loaders.
-train_dataloader = torch.utils.data.DataLoader(
-    training_data, batch_size=batch_size)
+train_dataloader = torch.utils.data.DataLoader(training_data,
+                                               batch_size=batch_size)
 test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
 
 for x, y in test_dataloader:
@@ -52,6 +52,7 @@ for t in range(epochs):
     print(f'Epoch {t+1}\n-------------------------------')
     engine_.train(train_dataloader, model, loss_fn, optimizer)
     engine_.test(test_dataloader, model, loss_fn)
+    print()
 print('Done!')
 
 torch.save(model.state_dict(), 'model.pth')
