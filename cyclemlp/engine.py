@@ -9,11 +9,13 @@ class Engine:
         size = len(dataloader.dataset)
         model.train()
         mean_loss = 0
+        correct = 0
         for batch, (x, y) in enumerate(dataloader):
             x, y = x.to(self._device), y.to(self._device)
 
             # Compute prediction error
             pred = model(x)
+            correct += (pred.argmax(dim=1) == y).sum().item()
             loss = loss_fn(pred, y)
 
             # Backpropagation
@@ -26,7 +28,7 @@ class Engine:
             print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
 
             mean_loss += loss / len(x)
-        return mean_loss
+        return mean_loss, correct/size
 
     def test(self, dataloader, model, loss_fn):
         size = len(dataloader.dataset)

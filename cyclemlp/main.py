@@ -8,19 +8,19 @@ import engine
 
 
 # Download training data from open datasets.
-training_data = torchvision.datasets.FashionMNIST(
+training_data = torchvision.datasets.STL10(
     root='data',
-    # split='train',
-    train=True,
+    split='train',
+    # train=True,
     download=True,
     transform=torchvision.transforms.ToTensor(),
 )
 
 # Download test data from open datasets.
-test_data = torchvision.datasets.FashionMNIST(
+test_data = torchvision.datasets.STL10(
     root='data',
-    # split='test',
-    train=False,
+    split='test',
+    # train=False,
     download=True,
     transform=torchvision.transforms.ToTensor(),
 )
@@ -52,15 +52,18 @@ epochs = 300
 engine_ = engine.Engine(device)
 with open('output.csv', 'w', newline='') as f:
     writer = csv.writer(f)
-    writer.writerow(['epoch', 'train loss', 'test loss', 'test accuracy'])
+    writer.writerow(['epoch', 'train loss', 'test loss',
+                     'train accuracy', 'test accuracy'])
 for t in range(epochs):
     print(f'Epoch {t+1}\n-------------------------------')
-    train_loss = engine_.train(train_dataloader, model, loss_fn, optimizer)
+    train_loss, train_accuracy = engine_.train(
+        train_dataloader, model, loss_fn, optimizer)
     test_loss, test_accuracy = engine_.test(test_dataloader, model, loss_fn)
     print()
     with open('output.csv', 'a', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow([t, train_loss, test_loss, test_accuracy])
+        writer.writerow([t, train_loss, test_loss,
+                         train_accuracy, test_accuracy])
 print('Done!')
 
 torch.save(model.state_dict(), 'model.pth')
