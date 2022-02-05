@@ -1,3 +1,11 @@
 __pycache__/
 /env/
 /data/
+/output.csv
+
+/latex/main.aux
+/latex/main.log
+/latex/main.nav
+/latex/main.out
+/latex/main.snm
+/latex/main.toc

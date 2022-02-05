@@ -1,3 +1,5 @@
+import csv
+
 import torch
 import torchvision
 
@@ -6,19 +8,19 @@ import engine
 
 
 # Download training data from open datasets.
-training_data = torchvision.datasets.STL10(
+training_data = torchvision.datasets.FashionMNIST(
     root='data',
-    split='train',
-    # train=True,
+    # split='train',
+    train=True,
     download=True,
     transform=torchvision.transforms.ToTensor(),
 )
 
 # Download test data from open datasets.
-test_data = torchvision.datasets.STL10(
+test_data = torchvision.datasets.FashionMNIST(
     root='data',
-    split='test',
-    # train=False,
+    # split='test',
+    train=False,
     download=True,
     transform=torchvision.transforms.ToTensor(),
 )
@@ -48,11 +50,17 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=5e-2)
 
 epochs = 300
 engine_ = engine.Engine(device)
+with open('output.csv', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(['epoch', 'train loss', 'test loss', 'test accuracy'])
 for t in range(epochs):
     print(f'Epoch {t+1}\n-------------------------------')
-    engine_.train(train_dataloader, model, loss_fn, optimizer)
-    engine_.test(test_dataloader, model, loss_fn)
+    train_loss = engine_.train(train_dataloader, model, loss_fn, optimizer)
+    test_loss, test_accuracy = engine_.test(test_dataloader, model, loss_fn)
     print()
+    with open('output.csv', 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([t, train_loss, test_loss, test_accuracy])
 print('Done!')
 
 torch.save(model.state_dict(), 'model.pth')

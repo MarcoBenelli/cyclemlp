@@ -8,6 +8,7 @@ class Engine:
     def train(self, dataloader, model, loss_fn, optimizer):
         size = len(dataloader.dataset)
         model.train()
+        mean_loss = 0
         for batch, (x, y) in enumerate(dataloader):
             x, y = x.to(self._device), y.to(self._device)
 
@@ -21,8 +22,11 @@ class Engine:
             optimizer.step()
 
             loss = loss.item()
-            current = batch * len(x) if batch < len(x)-1 else size
+            current = batch * len(x) if batch < len(dataloader)-1 else size
             print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
+
+            mean_loss += loss / len(x)
+        return mean_loss
 
     def test(self, dataloader, model, loss_fn):
         size = len(dataloader.dataset)
@@ -39,3 +43,4 @@ class Engine:
         correct /= size
         print('Test Error:')
         print(f' Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f}')
+        return test_loss, correct
