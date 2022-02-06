@@ -45,7 +45,7 @@ print(f'Using {device} device')
 model = cycle_mlp.CycleMLP_B1(in_chans=in_chans, num_classes=10).to(device)
 print(model)
 
-epochs = 300
+epochs = 100
 
 loss_fn = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=5e-2)

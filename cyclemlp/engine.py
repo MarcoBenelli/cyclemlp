@@ -29,8 +29,8 @@ class Engine:
                 loss, current, size, width=len(str(size))))
             current += len(x)
 
-            mean_loss += loss / len(x)
-        return mean_loss, correct/size
+            mean_loss += loss
+        return mean_loss/len(dataloader), correct/size
 
     def test(self, dataloader, model, loss_fn):
         size = len(dataloader.dataset)
