@@ -45,10 +45,12 @@ print(f'Using {device} device')
 model = cycle_mlp.CycleMLP_B1(in_chans=in_chans, num_classes=10).to(device)
 print(model)
 
+epochs = 300
+
 loss_fn = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=5e-2)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, epochs)
 
-epochs = 300
 engine_ = engine.Engine(device)
 with open('output.csv', 'w', newline='') as f:
     writer = csv.writer(f)
@@ -59,6 +61,7 @@ for t in range(epochs):
     train_loss, train_accuracy = engine_.train(
         train_dataloader, model, loss_fn, optimizer)
     test_loss, test_accuracy = engine_.test(test_dataloader, model, loss_fn)
+    scheduler.step()
     print()
     with open('output.csv', 'a', newline='') as f:
         writer = csv.writer(f)

@@ -10,6 +10,7 @@ class Engine:
         model.train()
         mean_loss = 0
         correct = 0
+        current = 0
         for batch, (x, y) in enumerate(dataloader):
             x, y = x.to(self._device), y.to(self._device)
 
@@ -24,8 +25,8 @@ class Engine:
             optimizer.step()
 
             loss = loss.item()
-            current = batch * len(x) if batch < len(dataloader)-1 else size
             print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
+            current += len(x)
 
             mean_loss += loss / len(x)
         return mean_loss, correct/size
