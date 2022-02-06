@@ -57,7 +57,7 @@ with open('output.csv', 'w', newline='') as f:
     writer.writerow(['epoch', 'train loss', 'test loss',
                      'train accuracy', 'test accuracy'])
 for t in range(epochs):
-    print(f'Epoch {t+1}\n-------------------------------')
+    print(f'Epoch {t}\n-------------------------------')
     train_loss, train_accuracy = engine_.train(
         train_dataloader, model, loss_fn, optimizer)
     test_loss, test_accuracy = engine_.test(test_dataloader, model, loss_fn)
@@ -65,8 +65,8 @@ for t in range(epochs):
     print()
     with open('output.csv', 'a', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow([t, train_loss, test_loss,
-                         train_accuracy, test_accuracy])
+        writer.writerow([t, f'{train_loss:f}', f'{test_loss:f}',
+                         f'{train_accuracy:f}', f'{test_accuracy:f}'])
 print('Done!')
 
 torch.save(model.state_dict(), 'model.pth')

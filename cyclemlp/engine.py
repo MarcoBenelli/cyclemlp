@@ -25,7 +25,8 @@ class Engine:
             optimizer.step()
 
             loss = loss.item()
-            print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
+            print('loss: {:7f}  [{:{width}}/{:{width}}]'.format(
+                loss, current, size, width=len(str(size))))
             current += len(x)
 
             mean_loss += loss / len(x)
@@ -45,5 +46,5 @@ class Engine:
         test_loss /= num_batches
         correct /= size
         print('Test Error:')
-        print(f' Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f}')
+        print(f' Accuracy: {(100*correct):0.1f}%, Avg loss: {test_loss:8f}')
         return test_loss, correct
