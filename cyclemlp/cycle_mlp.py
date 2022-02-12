@@ -170,10 +170,10 @@ class Downsample(torch.nn.Module):
         return x
 
 
-def basic_blocks(dim, index, layers, mlp_ratio=3.):
+def basic_blocks(dim, num_layers, mlp_ratio=3.):
     blocks = []
 
-    for block_idx in range(layers[index]):
+    for block_idx in range(num_layers):
         blocks.append(CycleBlock(dim, mlp_ratio=mlp_ratio))
     blocks = torch.nn.Sequential(*blocks)
 
@@ -194,7 +194,7 @@ class CycleNet(torch.nn.Module):
 
         network = []
         for i in range(len(layers)):
-            stage = basic_blocks(embed_dims[i], i, layers,
+            stage = basic_blocks(embed_dims[i], layers[i],
                                  mlp_ratio=mlp_ratios[i])
             network.append(stage)
             if i >= len(layers) - 1:
@@ -211,7 +211,7 @@ class CycleNet(torch.nn.Module):
     def cls_init_weights(self, m):
         if isinstance(m, torch.nn.Linear):
             timm.models.layers.trunc_normal_(m.weight, std=.02)
-            if isinstance(m, torch.nn.Linear) and m.bias is not None:
+            if m.bias is not None:
                 torch.nn.init.constant_(m.bias, 0)
         elif isinstance(m, torch.nn.LayerNorm):
             torch.nn.init.constant_(m.bias, 0)
@@ -228,7 +228,7 @@ class CycleNet(torch.nn.Module):
 
     def forward_tokens(self, x):
         outs = []
-        for idx, block in enumerate(self.network):
+        for _, block in enumerate(self.network):
             x = block(x)
 
         B, H, W, C = x.shape
