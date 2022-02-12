@@ -2,6 +2,7 @@ import csv
 
 import torch
 import torchvision
+import timm
 
 import cycle_mlp
 import engine
@@ -35,6 +36,7 @@ test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
 for x, y in test_dataloader:
     print('Shape of X [N, C, H, W]: ', x.shape)
     in_chans = x.shape[1]
+    img_size = x.shape[2]
     print('Shape of y: ', y.shape, y.dtype)
     break
 
@@ -42,7 +44,11 @@ for x, y in test_dataloader:
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'Using {device} device')
 
-model = cycle_mlp.CycleMLP_B1(in_chans=in_chans, num_classes=10).to(device)
+model = cycle_mlp.CycleMLP_B1(in_chans=in_chans, num_classes=10)
+# model = torchvision.models.resnet18(num_classes=10)
+# model = timm.models.vit_tiny_patch16_224(num_classes=10, img_size=img_size)
+# model = timm.models.mixer_s16_224(num_classes=10, img_size=img_size)
+model = model.to(device)
 print(model)
 
 epochs = 100
