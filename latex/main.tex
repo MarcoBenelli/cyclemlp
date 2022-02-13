@@ -1,6 +1,8 @@
 \documentclass{beamer}
 
+\usepackage{multirow}
 \usepackage{pgfplots}
+
 \pgfplotsset{compat=1.17}
 
 \mode<presentation>
@@ -57,12 +59,6 @@
 
 \section{Method}
 
-\begin{frame}{MLP-Mixer v. CycleMLP}
-    \centering
-    \parbox{.4\textwidth}{\centering \includegraphics[height=.8\textheight]{figures/mlp_mixer.png}}
-    \parbox{.4\textwidth}{\centering \includegraphics[height=.8\textheight]{figures/cycle_mlp.png}}
-\end{frame}
-
 \subsection{Cycle Fully-Connected Layer}
 
 \begin{frame}{Cycle FC}
@@ -82,9 +78,54 @@
     % \end{tabular}}
 \end{frame}
 
+\begin{frame}{Stepsize Example}
+    \centering
+    \includegraphics[height=.8\textheight]{figures/stepsize_3_2.png}
+\end{frame}
+
 \subsection{Overall Architecture}
 
-\section{Experiments}
+\begin{frame}{Comparison Of MLP Blocks}
+    \centering
+    \parbox{.4\textwidth}{\centering \includegraphics[width=.4\textwidth]{figures/block_mlpmixer.png}}
+    \parbox{.4\textwidth}{\centering \includegraphics[width=.4\textwidth]{figures/block_cyclemlp.png}}
+\end{frame}
+
+\begin{frame}{Hierarchy}
+    \centering
+    \parbox{.4\textwidth}{\centering \includegraphics[width=.4\textwidth]{figures/hierarchy_singlestage.png}}
+    \parbox{.4\textwidth}{\centering \includegraphics[width=.4\textwidth]{figures/hierarchy_pyramid.png}}
+\end{frame}
+\begin{frame}{Instantiation}
+    \centering
+    \resizebox{!}{.4\textheight}{\begin{tabular}{c|c|c|c}
+        \hline
+        & Output Size & Layer Name & B1 \\
+        \hline
+        \multirow{2}{*}{Stage 1} & \multirow{2}{*}{$\frac{H}{4} \times \frac{W}{4}$}
+            & \begin{tabular}[c]{@{}c@{}} Overlapping \\ Patch Embedding \end{tabular} & $C_1=64$ \\
+            \cline{3-4} 
+            & & \begin{tabular}[c]{@{}c@{}} CycleMLP \\ Block \end{tabular} & \begin{tabular}[c]{@{}c@{}} $E_1=4$ \\ $L_1=2$ \end{tabular} \\
+        \hline
+        \multirow{2}{*}{Stage 2} & \multirow{2}{*}{$\frac{H}{8} \times \frac{W}{8}$}
+            & \begin{tabular}[c]{@{}c@{}} Overlapping \\ Patch Embedding \end{tabular} & $C_2=128$  \\
+            \cline{3-4} 
+            & & \begin{tabular}[c]{@{}c@{}} CycleMLP \\ Block \end{tabular} & \begin{tabular}[c]{@{}c@{}} $E_2=4$ \\ $L_2=2$ \end{tabular} \\
+        \hline
+        \multirow{2}{*}{Stage 3} & \multirow{2}{*}{$\frac{H}{16} \times \frac{W}{16}$}
+            & \begin{tabular}[c]{@{}c@{}} Overlapping \\ Patch Embedding \end{tabular} &  $C_3=320$ \\
+            \cline{3-4} 
+            & & \begin{tabular}[c]{@{}c@{}} CycleMLP \\ Block \end{tabular} & \begin{tabular}[c]{@{}c@{}} $E_3=4$ \\ $L_3=4$ \end{tabular} \\
+        \hline
+        \multirow{2}{*}{Stage 4} & \multirow{2}{*}{$\frac{H}{32} \times \frac{W}{32}$}
+            & \begin{tabular}[c]{@{}c@{}} Overlapping \\ Patch Embedding \end{tabular} & $C_4=512$ \\
+            \cline{3-4} 
+            & & \begin{tabular}[c]{@{}c@{}} CycleMLP \\ Block \end{tabular} & \begin{tabular}[c]{@{}c@{}} $E_4=4$ \\ $L_4=2$ \end{tabular} \\
+        \hline
+    \end{tabular}}
+\end{frame}
+
+\section{Classification Experiments}
 
 \begin{frame}{Experimental Setup}
     \begin{itemize}
@@ -99,22 +140,22 @@
 
 \begin{frame}{Experiments}
     \centering
-    \begin{tabular}{c c c c}
+    \begin{tabular}{c c c}
         \hline
-        Model & STL10 & CIFAR10 & ImageNet-1K \\
+        Model & STL10 & CIFAR10 \\
         \hline
         ResNet & 64.9\% & 77.1\% \\
         % RegNet & 51.5\% & 60.6\% \\
-        ViT & 44.4\% \\
-        MLP-Mixer & 51.4\% \\
+        ViT & 44.4\% & 53.4\% \\
+        MLP-Mixer & 51.4\% & 55.5\% \\
         CycleMLP & 49.8\% & 66.5\% \\
         \hline
     \end{tabular}
 \end{frame}
 
-\subsection{CIFAR10 Classification}
+\subsection{CIFAR10}
 
-\begin{frame}{Loss Plot}
+\begin{frame}{Loss Plot (CIFAR10)}
     \centering
     \begin{tikzpicture}
         \begin{axis}[
@@ -133,7 +174,7 @@
     \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Accuracy Plot}
+\begin{frame}{Accuracy Plot (CIFAR10)}
     \centering
     \begin{tikzpicture}
         \begin{axis}[
@@ -152,9 +193,9 @@
     \end{tikzpicture}
 \end{frame}
 
-\subsection{STL10 Classification}
+\subsection{STL10}
 
-\begin{frame}{Loss Plot}
+\begin{frame}{Loss Plot (STL10)}
     \centering
     \begin{tikzpicture}
         \begin{axis}[
@@ -173,7 +214,7 @@
     \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Accuracy Plot}
+\begin{frame}{Accuracy Plot (STL10)}
     \centering
     \begin{tikzpicture}
         \begin{axis}[
@@ -192,15 +233,30 @@
     \end{tikzpicture}
 \end{frame}
 
-\section{Conclusion}
+\subsection{ImageNet-1K}
+
+\begin{frame}{ImageNet-1K Comparison}
+    \centering
+    \begin{tabular}{c c}
+        \hline
+        Model & Accuracy \\
+        \hline
+        ResNet & 69.8\% \\
+        % RegNet & 81.7\% \\
+        ViT & 77.9\% \\
+        MLP-Mixer & 61.4\% \\
+        CycleMLP & 79.1\% \\
+        \hline
+    \end{tabular}
+\end{frame}
 
 \section*{Summary}
 
 \begin{frame}{Summary}
     \begin{itemize}
-    \item The \alert{first main message} of your talk in one or two lines.
-    \item The \alert{second main message} of your talk in one or two lines.
-    \item Perhaps a \alert{third message}, but not more than that.
+        \item CycleMLP is built upon the \alert{Cycle FC}.
+        \item Cycle FC is capable of dealing with \alert{variable input scales}.
+        \item The computational cost of Cycle FC is \alert{$O(HWC^2)$}.
     \end{itemize}
 \end{frame}
 
