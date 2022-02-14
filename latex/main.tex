@@ -17,6 +17,7 @@
 \date{February 14, 2022}
 
 \DeclareMathOperator{\layernorm}{LayerNorm}
+\DeclareMathOperator{\cyclefc}{CycleFC}
 
 \begin{document}
 
@@ -61,7 +62,7 @@
 
 \subsection{Cycle Fully-Connected Layer}
 
-\begin{frame}{Cycle FC}
+\begin{frame}{Cycle Fully-Connected Layer}
     \centering
     \includegraphics[height=.8\textheight]{figures/teaser.png}
     % \parbox{.4\textwidth}{\includegraphics[width=.4\textwidth]{figures/teaser.png}}
@@ -81,6 +82,12 @@
 \begin{frame}{Stepsize Example}
     \centering
     \includegraphics[height=.8\textheight]{figures/stepsize_3_2.png}
+\end{frame}
+
+\begin{frame}{Cycle Fully-Connected Layer}
+    $$\cyclefc(\mathbf{X})_{i,j,:} = \sum_{c=0}^{C_\text{in}} \mathbf{X}_{i+\delta_\text{i}(c),j+\delta_\text{j}(c),c} \cdot \mathbf{W}_{c,:} + \mathbf{b}$$
+    $$\delta_\text{i}(c) = (c \bmod S_H) - \left\lfloor \frac{S_H}{2} \right\rfloor$$
+    $$\delta_\text{j}(c) = \left(\left\lfloor \frac{c}{S_H} \right\rfloor \bmod S_W\right) - \left\lfloor \frac{S_W}{2} \right\rfloor$$
 \end{frame}
 
 \subsection{Overall Architecture}
